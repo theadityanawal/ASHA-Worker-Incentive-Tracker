@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASHA Worker Complete Incentives Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 20px;
+            background-color: #fff;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #3498db;
+            color: #fff;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        input[type="number"] {
+            width: 60px;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        #totalEarnings {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-top: 20px;
+            text-align: right;
+            color: #27ae60;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-style: italic;
+            color: #7f8c8d;
+        }
+        #userInfo {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        #userInfo input, #userInfo select {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #27ae60;
+        }
+        .category-header {
+            background-color: #34495e;
+            color: white;
+            font-weight: bold;
+        }
+        .category-subheader {
+            background-color: #95a5a6;
+            color: white;
+        }
+        #otherCategory {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #ecf0f1;
+            border-radius: 4px;
+        }
+        @media print {
+            body {
+                background-color: white;
+            }
+            .container {
+                box-shadow: none;
+            }
+            button {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ASHA Worker Complete Incentives Tracker</h1>
+        <div id="userInfo">
+            <input type="text" id="ashaName" placeholder="Enter your name">
+            <select id="month">
+                <option value="">Select Month</option>
+                <option value="January">January</option>
+                <option value="February">February</option>
+                <option value="March">March</option>
+                <option value="April">April</option>
+                <option value="May">May</option>
+                <option value="June">June</option>
+                <option value="July">July</option>
+                <option value="August">August</option>
+                <option value="September">September</option>
+                <option value="October">October</option>
+                <option value="November">November</option>
+                <option value="December">December</option>
+            </select>
+            <input type="number" id="year" placeholder="Year" min="2000" max="2100">
+            <button id="printButton">Print / Save as PDF</button>
+        </div>
+        <table id="incentivesTable">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Activity</th>
+                    <th>Amount (₹)</th>
+                    <th>Count</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Table rows will be dynamically added here -->
+            </tbody>
+        </table>
+        <div id="totalEarnings">Total Earnings: ₹0</div>
+        <div id="otherCategory">
+            <h2>Add Other Category/Activity</h2>
+            <input type="text" id="otherCategoryName" placeholder="Category">
+            <input type="text" id="otherActivityName" placeholder="Activity">
+            <input type="number" id="otherAmount" placeholder="Amount">
+            <button id="addOtherEntry">Add Entry</button>
+        </div>
+        <div class="footer">
+            <p>Prepared by: Dr. Ruchit Nawal</p>
+            <p>Under guidance of Dr. Devang A Raval (Professor and Head)</p>
+            <p>Dept of Community Medicine, B J Medical College Ahmedabad</p>
+            <p>Source: NHM</p>
+        </div>
+    </div>
+
+    <script>
+           const incentives = [
+    { category: "Maternal health", activity: "JSY financial package (rural)", amount: 600 },
+    { category: "Maternal health", activity: "JSY financial package (urban)", amount: 400 },
+    { category: "Maternal health", activity: "Ensuring antenatal care (rural)", amount: 300 },
+    { category: "Maternal health", activity: "Ensuring antenatal care (urban)", amount: 200 },
+    { category: "Maternal health", activity: "Facilitating institutional delivery (rural)", amount: 300 },
+    { category: "Maternal health", activity: "Facilitating institutional delivery (urban)", amount: 200 },
+    { category: "Maternal health", activity: "Reporting death of women (15-49 years)", amount: 200, notes: "₹1000 if within 24 hours" },
+    { category: "Maternal health", activity: "PMSMA", amount: 100, notes: "Per visit for three visits and ₹500 on 45th day after delivery" },
+    { category: "Child health", activity: "Home visit for newborn and postpartum mother care", amount: 250 },
+    { category: "Child health", activity: "Home visits for young child care", amount: 50, notes: "Per visit, total ₹250 for 5 visits" },
+    { category: "Child health", activity: "Child death review for under 5 years", amount: 50 },
+    { category: "Child health", activity: "Administering Albendazole to children (1-19 years)", amount: 100, notes: "ASHA/Bi-annual" },
+    { category: "Child health", activity: "ORS distribution during IDCF", amount: 1, notes: "Per ORS packet for 100 under-five children" },
+    { category: "Child health", activity: "MAA Programme - Breastfeeding promotion", amount: 100, notes: "ASHA/quarterly meeting" },
+    { category: "Immunization", activity: "Full immunization for a child under one year", amount: 100, notes: "Some states giving ₹150" },
+    { category: "Immunization", activity: "Complete immunization up to two years age", amount: 75, notes: "Some states giving ₹90" },
+    { category: "Immunization", activity: "Mobilizing children for OPV under Pulse Polio", amount: 150, notes: "Per day" },
+    { category: "Immunization", activity: "DPT Booster at 5-6 years of age", amount: 50 },
+    { category: "Family planning", activity: "Ensuring spacing of 2 years after marriage", amount: 500 },
+    { category: "Family planning", activity: "Ensuring spacing of 3 years after 1st child", amount: 500 },
+    { category: "Family planning", activity: "Ensuring couple opts for permanent limiting method after 2 children", amount: 1000 },
+    { category: "Family planning", activity: "Counselling for tubectomy (high fertility states)", amount: 200, notes: "In 11 states with high fertility rates" },
+    { category: "Family planning", activity: "Female postpartum sterilization", amount: 300, notes: "In 11 states with high fertility rates" },
+    { category: "Family planning", activity: "Social marketing of contraceptives", amount: 1, notes: "For a pack of 3 condoms, 1 cycle of OCP, 1 ECP" },
+    { category: "Adolescent health", activity: "Distributing sanitary napkins", amount: 1, notes: "Per pack of 6 sanitary napkins" },
+    { category: "Adolescent health", activity: "Organizing monthly meeting on menstrual hygiene", amount: 50, notes: "Per meeting" },
+    { category: "Adolescent health", activity: "Support to peer educator selection", amount: 100, notes: "Per PE" },
+    { category: "Adolescent health", activity: "Mobilizing adolescents for Adolescent Health Day", amount: 200, notes: "Per AHD" },
+    { category: "Routine activities", activity: "Attending VHND or Urban Health Nutrition Day", amount: 200, notes: "Per session" },
+    { category: "Routine activities", activity: "Monthly meeting of VHSNC/MAS", amount: 150 },
+    { category: "Routine activities", activity: "Maintaining village health register", amount: 1500, notes: "Annual" },
+    { category: "Revised National Tuberculosis Control Programme", activity: "For drug sensitive TB patients", amount: 1000 },
+    { category: "Revised National Tuberculosis Control Programme", activity: "For drug resistant TB patients", amount: 5000 },
+    { category: "Revised National Tuberculosis Control Programme", activity: "For notification if suspect referred is diagnosed", amount: 100 },
+    { category: "National Leprosy Eradication Programme", activity: "Referral for pauci-bacillary cases", amount: 250, notes: "For facilitating diagnosis" },
+    { category: "National Leprosy Eradication Programme", activity: "Follow-up for pauci-bacillary cases", amount: 400, notes: "On completion of treatment" },
+    { category: "National Leprosy Eradication Programme", activity: "Referral for multi-bacillary cases", amount: 250, notes: "For facilitating diagnosis" },
+    { category: "National Leprosy Eradication Programme", activity: "Follow-up for multi-bacillary cases", amount: 600, notes: "On completion of treatment" },
+    { category: "National Vector Borne Disease Control Programme", activity: "Preparing blood slides or RDT", amount: 15, notes: "Per slide or test" },
+    { category: "National Vector Borne Disease Control Programme", activity: "Treatment for RDT positive Pf cases", amount: 75, notes: "Per positive case" },
+    { category: "National Vector Borne Disease Control Programme", activity: "Referring and ensuring complete treatment", amount: 300 },
+    { category: "Lymphatic filariasis", activity: "Listing of lymphoedema and hydrocele cases", amount: 200, notes: "One-time activity" },
+    { category: "Lymphatic filariasis", activity: "Mass drug administration", amount: 200, notes: "Per day, max 3 days for 50 houses and 250 persons" },
+    { category: "Acute encephalitis syndrome/Japanese encephalitis", activity: "Referral to nearest CHC/DH/medical college", amount: 300, notes: "Per case" },
+    { category: "Kala azar elimination", activity: "Involvement during IRS rounds", amount: 100, notes: "Per round, ₹200 total for two rounds" },
+    { category: "Kala azar elimination", activity: "Referring suspected case and ensuring treatment", amount: 500, notes: "Per notified case" },
+    { category: "Dengue and Chikungunya", activity: "Source reduction and IEC activities", amount: 200, notes: "1 Rupee/house for max 200 houses PM for 08 months during peak transmission season. Max ₹1600/ASHA/Year" },
+    { category: "National Iodine Deficiency Disorders Control Programme", activity: "Salt testing", amount: 25, notes: "A month for testing 50 salt samples" },
+    { category: "Comprehensive Primary Health Care", activity: "Maintaining data for NHPM-Ayushman Bharat", amount: 5, notes: "Per form/family" },
+    { category: "Comprehensive Primary Health Care", activity: "Filling CBAC forms for 30+ individuals", amount: 10, notes: "Per form/individual as one-time incentive" },
+    { category: "Comprehensive Primary Health Care", activity: "Follow up of NCD patients", amount: 50, notes: "Per case/Bi-annual" },
+    { category: "Comprehensive Primary Health Care", activity: "New service packages under CPHC", amount: 1000, notes: "ASHA/PM (linked with new packages of activities)" },
+    { category: "Drinking water and sanitation", activity: "Motivating households to construct toilet", amount: 75, notes: "Per household" },
+    { category: "Drinking water and sanitation", activity: "Motivating households for tap connections", amount: 75, notes: "Per household" },
+];
+
+function createTable() {
+    const tbody = document.querySelector('#incentivesTable tbody');
+    tbody.innerHTML = ''; // Clear existing rows
+    let currentCategory = '';
+    incentives.forEach((incentive, index) => {
+        if (incentive.category !== currentCategory) {
+            currentCategory = incentive.category;
+            const categoryRow = tbody.insertRow();
+            categoryRow.className = 'category-header';
+            const categoryCell = categoryRow.insertCell(0);
+            categoryCell.textContent = currentCategory;
+            categoryCell.colSpan = 5;
+        }
+        const row = tbody.insertRow();
+        row.innerHTML = `
+            <td></td>
+            <td>${incentive.activity}</td>
+            <td>₹${incentive.amount}${incentive.notes ? ' - ' + incentive.notes : ''}</td>
+            <td><input type="number" min="0" value="0" data-index="${index}"></td>
+            <td>₹0</td>
+        `;
+        row.querySelector('input').addEventListener('input', (e) => updateTotal(e.target));
+    });
+}
+    </script>
+<script>
+    function updateTotal(input) {
+    const row = input.closest('tr');
+    const index = input.dataset.index;
+    const count = parseInt(input.value) || 0;
+    const amount = incentives[index].amount;
+    const total = count * amount;
+    row.cells[4].textContent = `₹${total}`;
+    
+    calculateGrandTotal();
+}
+
+function calculateGrandTotal() {
+    let grandTotal = 0;
+    document.querySelectorAll('#incentivesTable tbody tr:not(.category-header)').forEach((row) => {
+        grandTotal += parseInt(row.cells[4].textContent.replace('₹', '')) || 0;
+    });
+    document.getElementById('totalEarnings').textContent = `Total Earnings: ₹${grandTotal}`;
+}
+
+function addOtherEntry() {
+    const category = document.getElementById('otherCategoryName').value;
+    const activity = document.getElementById('otherActivityName').value;
+    const amount = parseInt(document.getElementById('otherAmount').value);
+
+    if (!category || !activity || isNaN(amount)) {
+        alert('Please fill all fields for the new entry.');
+        return;
+    }
+
+    incentives.push({ category: "Other: " + category, activity, amount });
+    createTable(); // Rebuild the table with the new entry
+    calculateGrandTotal();
+
+    // Clear input fields
+    document.getElementById('otherCategoryName').value = '';
+    document.getElementById('otherActivityName').value = '';
+    document.getElementById('otherAmount').value = '';
+}
+
+function printData() {
+    window.print();
+}
+
+document.getElementById('printButton').addEventListener('click', printData);
+document.getElementById('addOtherEntry').addEventListener('click', addOtherEntry);
+
+// Initialize the table and event listeners
+createTable();
+
+// Update totals when the user changes the month or year
+document.getElementById('month').addEventListener('change', calculateGrandTotal);
+document.getElementById('year').addEventListener('change', calculateGrandTotal);
+
+// Calculate initial total
+calculateGrandTotal();
+</script>
+</body>
+</html>
